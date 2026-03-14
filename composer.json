@@ -1,0 +1,13 @@
+{
+    "name": "derkdts/php-eng",
+    "description": "English Learning Notes",
+    "type": "project",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "includes/"
+        }
+    }
+}
