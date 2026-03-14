@@ -19,6 +19,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Edit Word
+    if (isset($_POST['action']) && $_POST['action'] === 'edit_word') {
+        $id = (int)($_POST['word_id'] ?? 0);
+        $word = trim($_POST['word'] ?? '');
+        $translation = trim($_POST['translation'] ?? '');
+        $category_id = !empty($_POST['category_id']) ? (int)$_POST['category_id'] : null;
+        
+        if ($id && $word && $translation) {
+            $stmt = $pdo->prepare("UPDATE vocabulary SET word = ?, translation = ?, category_id = ? WHERE id = ?");
+            $stmt->execute([$word, $translation, $category_id, $id]);
+        }
+        header('Location: ?page=vocabulary' . ($category_id ? '&category=' . $category_id : ''));
+        exit;
+    }
+
     // Add Category
     if (isset($_POST['action']) && $_POST['action'] === 'add_category') {
         $name = trim($_POST['category_name'] ?? '');
@@ -36,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $content = trim($_POST['content'] ?? '');
         $image_path = handle_grammar_upload($_FILES['image'] ?? null);
         
-        if ($title && $content) {
+        if ($title) {
             $stmt = $pdo->prepare("INSERT INTO grammar (title, content, image_path) VALUES (?, ?, ?)");
             $stmt->execute([$title, $content, $image_path]);
         }

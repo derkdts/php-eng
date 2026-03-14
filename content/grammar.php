@@ -1,65 +1,73 @@
 <?php
-$pdo = require 'db.php';
+$pdo = require __DIR__ . '/../db.php';
 $stmt = $pdo->query("SELECT * FROM grammar ORDER BY created_at DESC");
 $rules = $stmt->fetchAll();
 ?>
 
-<div class="card">
-    <h3 class="section-title">Грамматика</h3>
-    
-    <!-- Форма добавления правила -->
-    <div class="form-container card" style="background: rgba(255, 255, 255, 0.02); margin-bottom: 2rem; padding: 1.5rem;">
-        <h4 style="margin-bottom: 1rem; font-weight: 400; color: var(--text-secondary);">Добавить новое правило</h4>
-        <form action="index.php" method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 1rem;">
-            <div>
-                <label for="title" style="display: block; font-size: 0.8rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Название темы</label>
-                <input type="text" id="title" name="title" required placeholder="Напр: Present Perfect"
-                       style="width: 100%; padding: 0.8rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 8px; color: #fff; outline: none; font-family: inherit;">
+<div style="display: grid; gap: 2rem;">
+    <!-- Add Grammar Section -->
+    <div class="card">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">New Grammar Rule</h3>
+        <form action="index.php" method="POST" enctype="multipart/form-data" style="display: grid; gap: 1.5rem;">
+            <input type="hidden" name="action" value="add_grammar">
+            
+            <div style="display: grid; gap: 8px;">
+                <label class="input-label">Topic Title</label>
+                <input type="text" name="title" required placeholder="Ex: Future Perfect Continuous" class="glass-input">
             </div>
-            <div>
-                <label for="content" style="display: block; font-size: 0.8rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Правило / Заметка</label>
-                <textarea id="content" name="content" required rows="4" placeholder="Опишите правило здесь..."
-                          style="width: 100%; padding: 0.8rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 8px; color: #fff; outline: none; font-family: inherit; resize: vertical;"></textarea>
+            
+            
+            <div style="display: grid; gap: 8px;">
+                <label class="input-label">Attach Visual Aid (Optional)</label>
+                <input type="file" name="image" accept="image/*" style="color: var(--text-secondary); font-size: 0.85rem;">
             </div>
-            <div>
-                <label for="image" style="display: block; font-size: 0.8rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Фотография (необязательно)</label>
-                <input type="file" id="image" name="image" accept="image/*"
-                       style="width: 100%; padding: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
-            </div>
-            <button type="submit" 
-                    style="align-self: flex-start; padding: 0.8rem 2.5rem; background: var(--active-gradient); border: none; border-radius: 8px; color: #fff; font-weight: 600; cursor: pointer; transition: transform 0.2s;">
-                Сохранить правило
-            </button>
+            
+            <button type="submit" class="primary-btn" style="justify-self: start;">Save Rule</button>
         </form>
     </div>
 
-    <div style="margin-top: 2rem;">
+    <!-- Rules List -->
+    <div style="display: grid; gap: 1rem;">
         <?php if (empty($rules)): ?>
-            <p class="placeholder-text">Заметок по грамматике пока нет. Добавьте ваше первое правило!</p>
+            <div class="card" style="text-align: center; padding: 4rem; opacity: 0.5;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">⚖️</div>
+                <p>No grammar notes yet. Add your first rule above.</p>
+            </div>
         <?php else: ?>
             <?php foreach ($rules as $item): ?>
-                <details class="card grammar-card" style="padding: 1.2rem; background: rgba(255,255,255,0.03); cursor: pointer; margin-bottom: 1rem; border: 1px solid var(--glass-border); position: relative; transition: all 0.3s ease;">
-                    <summary style="font-weight: 600; color: var(--accent-color); outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center; padding-right: 2rem;">
-                        <span><?= htmlspecialchars($item['title']) ?></span>
-                        <span style="font-size: 0.8rem; opacity: 0.5;">▼</span>
+                <details class="card" style="padding: 0; overflow: hidden; cursor: pointer;">
+                    <summary style="padding: 1.5rem; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--accent-color);">
+                        <span style="display: flex; align-items: center; gap: 12px;">
+                            <span class="icon icon-scale"></span>
+                            <?= h($item['title']) ?>
+                            <button onclick="event.preventDefault(); speakText('<?= addslashes(h($item['title'])) ?>')" 
+                                    class="btn-icon" style="margin-left: 8px; width: 28px; height: 28px;" title="Listen">
+                                <span class="icon icon-speaker" style="width: 16px; height: 16px;"></span>
+                            </button>
+                        </span>
+                        <span style="font-size: 0.8rem; opacity: 0.5;">EXPAND ▼</span>
                     </summary>
                     
-                    <div style="margin-top: 1.5rem; border-top: 1px solid var(--glass-border); padding-top: 1rem;">
+                    <div style="padding: 2rem; border-top: 1px solid var(--glass-border); background: rgba(0,0,0,0.1);">
                         <?php if ($item['image_path']): ?>
-                            <div style="margin-bottom: 1.5rem; border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border);">
-                                <img src="<?= htmlspecialchars($item['image_path']) ?>" alt="Grammar Visual" style="max-width: 100%; display: block;">
+                            <div style="margin-bottom: 2rem; border-radius: 20px; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
+                                <img src="<?= h($item['image_path']) ?>" alt="Visual" style="width: 100%; display: block;">
                             </div>
                         <?php endif; ?>
                         
-                        <p style="font-size: 1rem; color: var(--text-secondary); line-height: 1.7; white-space: pre-wrap;"><?= htmlspecialchars($item['content']) ?></p>
+                        <p style="white-space: pre-wrap; line-height: 1.8; color: var(--text-primary); font-size: 1.05rem;"><?= h($item['content']) ?></p>
                         
-                        <form action="index.php" method="POST" style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
-                            <input type="hidden" name="delete_id" value="<?= $item['id'] ?>">
-                            <input type="hidden" name="table" value="grammar">
-                            <button type="submit" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 4px;" title="Удалить">
-                                🗑️ <span style="font-size: 0.8rem;">Удалить правило</span>
-                            </button>
-                        </form>
+                        <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                            <form action="index.php" method="POST">
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="delete_id" value="<?= $item['id'] ?>">
+                                <input type="hidden" name="table" value="grammar">
+                                <button type="submit" class="btn-icon delete" style="width: auto; padding: 0 1rem; gap: 8px;">
+                                    <span class="icon icon-trash"></span>
+                                    <span style="font-size: 0.8rem; font-weight: 600;">Delete Note</span>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </details>
             <?php endforeach; ?>

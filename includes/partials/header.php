@@ -1,14 +1,13 @@
 <header class="top-header">
-    <?php
-    $page_titles = [
-        'vocabulary' => 'Словарный запас',
-        'categories' => 'Категории',
-        'grammar' => 'Грамматика'
-    ];
-    $display_title = $page_titles[$page] ?? 'English Prep';
-    ?>
-    <h2><?= $display_title ?></h2>
-    <div class="user-profile">
-        <div class="avatar">A</div>
+    <div>
+        <h2 class="page-title"><?= $display_title ?></h2>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">Welcome back</p>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div
+            style="width: 48px; height: 48px; border-radius: 16px; background: var(--active-gradient); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; box-shadow: 0 8px 16px var(--accent-glow);">
+            A
+        </div>
     </div>
 </header>
