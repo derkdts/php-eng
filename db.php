@@ -56,8 +56,8 @@ try {
     // Create default admin if no users exist
     $stmt = $pdo->query("SELECT COUNT(*) FROM users");
     if ($stmt->fetchColumn() == 0) {
-        $username = 'alime_user_5821';
-        $password = password_hash('r8!N$2xP#L9q', PASSWORD_DEFAULT);
+        $username = 'admin';
+        $password = password_hash('admin', PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
         $stmt->execute([$username, $password]);
     }

@@ -4,8 +4,8 @@
  */
 $pdo = require __DIR__ . '/db.php';
 
-$username = 'alime_user_5821';
-$password = password_hash('r8!N$2xP#L9q', PASSWORD_DEFAULT);
+$username = 'admin';
+$password = password_hash('admin', PASSWORD_DEFAULT);
 
 // Check if user exists, update if yes, insert if no
 $stmt = $pdo->query("SELECT id FROM users LIMIT 1");

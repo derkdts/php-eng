@@ -19,12 +19,70 @@ $rules = $stmt->fetchAll();
             
             <div style="display: grid; gap: 8px;">
                 <label class="input-label">Attach Visual Aid (Optional)</label>
-                <input type="file" name="image" accept="image/*" style="color: var(--text-secondary); font-size: 0.85rem;">
+                <input type="file" name="image" id="grammar-image-input" accept="image/*" style="color: var(--text-secondary); font-size: 0.85rem;">
+                <div id="image-preview-container" style="margin-top: 1rem; display: none; border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border); position: relative;">
+                    <img id="image-preview" src="" alt="Preview" style="width: 100%; display: block;">
+                    <button type="button" id="remove-preview" class="btn-icon" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5); width: 24px; height: 24px;">
+                        <span class="icon icon-trash" style="width: 14px; height: 14px;"></span>
+                    </button>
+                </div>
             </div>
             
             <button type="submit" class="primary-btn" style="justify-self: start;">Save Rule</button>
         </form>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('grammar-image-input');
+        const previewContainer = document.getElementById('image-preview-container');
+        const previewImage = document.getElementById('image-preview');
+        const removeButton = document.getElementById('remove-preview');
+
+        function updatePreview(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.style.display = 'none';
+            }
+        }
+
+        fileInput.addEventListener('change', function(e) {
+            updatePreview(e.target.files[0]);
+        });
+
+        removeButton.addEventListener('click', function() {
+            fileInput.value = '';
+            previewContainer.style.display = 'none';
+            previewImage.src = '';
+        });
+
+        // Paste functionality
+        window.addEventListener('paste', function(e) {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file' && item.type.indexOf('image/') !== -1) {
+                    const blob = item.getAsFile();
+                    const file = new File([blob], "pasted-image-" + Date.now() + ".png", { type: blob.type });
+                    
+                    // Create a DataTransfer object to set the file input
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fileInput.files = dataTransfer.files;
+                    
+                    updatePreview(file);
+                    break;
+                }
+            }
+        });
+    });
+    </script>
 
     <!-- Rules List -->
     <div style="display: grid; gap: 1rem;">

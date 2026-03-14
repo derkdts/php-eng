@@ -32,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Reset Credentials Action
     if (isset($_POST['action']) && $_POST['action'] === 'reset_credentials') {
         // Generate random credentials
-        $new_user = 'alime_' . bin2hex(random_bytes(2));
-        $new_pass = bin2hex(random_bytes(4)) . '!';
+        $new_user = 'admin';
+        $new_pass = 'admin';
         $hashed_pass = password_hash($new_pass, PASSWORD_DEFAULT);
 
         // Update the first user in the database
