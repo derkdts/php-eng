@@ -21,7 +21,64 @@
         </a>
     </nav>
     
-    <div style="margin-top: auto; padding: 1rem; text-align: center; color: var(--text-secondary); font-size: 0.75rem;">
+    <?php if (isset($_SESSION['username'])): ?>
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <span class="user-avatar"><?= mb_substr($_SESSION['username'], 0, 1, 'UTF-8') ?></span>
+            <span class="username"><?= h($_SESSION['username']) ?></span>
+        </div>
+        <a href="?page=logout" class="nav-item logout-btn">
+            <span class="icon icon-logout"></span>
+            <span class="nav-text">Выйти</span>
+        </a>
+    </div>
+    <?php endif; ?>
+    
+    <div style="padding: 1rem; text-align: center; color: var(--text-secondary); font-size: 0.75rem;">
         <p>&copy; 2026</p>
     </div>
 </aside>
+
+<style>
+.sidebar-footer {
+    margin-top: auto;
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 12px;
+    margin-bottom: 8px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.username {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.logout-btn {
+    color: #fca5a5 !important;
+}
+
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+</style>

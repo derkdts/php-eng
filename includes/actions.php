@@ -5,6 +5,30 @@ require __DIR__ . '/functions.php';
 // Route Actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
+    // Login Action
+    if (isset($_POST['action']) && $_POST['action'] === 'login') {
+        $username = trim($_POST['username'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+        
+        if ($username && $password) {
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
+            $stmt->execute([$username]);
+            $user = $stmt->fetch();
+            
+            if ($user && password_verify($password, $user['password'])) {
+                session_regenerate_id(true);
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                header('Location: ?page=vocabulary');
+                exit;
+            } else {
+                $_SESSION['error'] = 'Неверное имя пользователя или пароль';
+            }
+        }
+        header('Location: ?page=login');
+        exit;
+    }
+
     // Add Word
     if (isset($_POST['action']) && $_POST['action'] === 'add_word') {
         $word = trim($_POST['word'] ?? '');

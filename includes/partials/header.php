@@ -7,7 +7,7 @@
     <div style="display: flex; align-items: center; gap: 20px;">
         <div
             style="width: 48px; height: 48px; border-radius: 16px; background: var(--active-gradient); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; box-shadow: 0 8px 16px var(--accent-glow);">
-            A
+            <?= isset($_SESSION['username']) ? mb_substr($_SESSION['username'], 0, 1, 'UTF-8') : 'A' ?>
         </div>
     </div>
 </header>

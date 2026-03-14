@@ -4,10 +4,29 @@
  * Refactored to use centralized logic in includes/
  */
 
+session_start();
 require_once __DIR__ . '/includes/actions.php';
 
 $page = $_GET['page'] ?? 'vocabulary';
-$allowed_pages = ['vocabulary', 'categories', 'grammar'];
+$allowed_pages = ['vocabulary', 'categories', 'grammar', 'login', 'logout'];
+
+// Authentication Check
+if ($page === 'logout') {
+    session_destroy();
+    header('Location: ?page=login');
+    exit;
+}
+
+if (!isset($_SESSION['user_id']) && $page !== 'login') {
+    header('Location: ?page=login');
+    exit;
+}
+
+if (isset($_SESSION['user_id']) && $page === 'login') {
+    header('Location: ?page=vocabulary');
+    exit;
+}
+
 if (!in_array($page, $allowed_pages)) $page = 'vocabulary';
 
 $titles = [
@@ -30,12 +49,16 @@ $display_title = $titles[$page] ?? 'English Prep';
 </head>
 <body>
     <div class="app-container">
-        <?php include 'includes/partials/sidebar.php'; ?>
+        <?php if ($page !== 'login'): ?>
+            <?php include 'includes/partials/sidebar.php'; ?>
+        <?php endif; ?>
         
-        <main class="content-area">
-            <?php include 'includes/partials/header.php'; ?>
+        <main class="content-area" <?= $page === 'login' ? 'style="padding: 0; display: flex; align-items: center; justify-content: center;"' : '' ?>>
+            <?php if ($page !== 'login'): ?>
+                <?php include 'includes/partials/header.php'; ?>
+            <?php endif; ?>
             
-            <section class="main-content">
+            <section class="main-content" <?= $page === 'login' ? 'style="width: 100%;"' : '' ?>>
                 <?php include "content/$page.php"; ?>
             </section>
         </main>

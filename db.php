@@ -45,6 +45,23 @@ try {
         $pdo->exec("ALTER TABLE grammar ADD COLUMN image_path TEXT");
     }
 
+    // 4. Users Table
+    $pdo->exec("CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )");
+
+    // Create default admin if no users exist
+    $stmt = $pdo->query("SELECT COUNT(*) FROM users");
+    if ($stmt->fetchColumn() == 0) {
+        $username = 'admin';
+        $password = password_hash('admin', PASSWORD_DEFAULT);
+        $stmt = $pdo->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+        $stmt->execute([$username, $password]);
+    }
+
 } catch (PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
 }
